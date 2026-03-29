@@ -34,7 +34,7 @@ impl DynamicsModel {
 
 impl System<f64, Vector6<f64>> for DynamicsModel {
     /// rhs = right-hand-side = f(t, x)
-    fn rhs(&self, _t: f64, x: &Vector6<f64>, dxdt: &mut Vector6<f64>) {
+    fn system(&self, _t: f64, x: &Vector6<f64>, dxdt: &mut Vector6<f64>) {
         let x_na = SystemState::from_row_slice(x.as_slice());
 
         let mut dxdt_na = SystemState::zeros();
