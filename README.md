@@ -1,4 +1,5 @@
 # UAV-UGV Cooperative Localization in Rust
+<img width="685" height="650" alt="Screenshot 2026-03-26 193443" src="https://github.com/user-attachments/assets/6ae7b0e2-46f4-492d-96d5-a3a0eb403b53" />
 
 
 This project generates a user-configurable simulation of cooperative localization between a UAV and UGV, using either an Extended Kalman Filter (EKF), or an Unscented Kalman Filter (UKF). This is an improved version of my similar C++ project that I have implemented in Rust.
@@ -9,6 +10,7 @@ Truth Model Testing (TMT) - where Monte Carlo trials are run to collect NEES and
 Time history data generated from the simulation (along with filter implementation settings) are written to CSV files and placed in a user-defined subdirectory under `/project-root/simulation_output/` for post-processing and analysis.
 
 # Simulation Overview
+<img width="534" height="186" alt="Screenshot 2026-04-04 164304" src="https://github.com/user-attachments/assets/18f32c59-c901-4de1-bbcc-d82b6f5d18cc" />
 
 
 ## State-Space System Definition
