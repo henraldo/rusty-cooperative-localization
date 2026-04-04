@@ -12,7 +12,7 @@ pub const VA_MIN: f64 = 10.0;
 pub const VA_MAX: f64 = 20.0;
 pub const OMEGA_A_MAX: f64 = PI / 6.0;
 
-pub const N_STATES: usize = 6;              // [xg, yg, thetag, xa, ya, thetaa]
+pub const N_STATES: usize = 6;              // [E_g, N_g, heading_g, E_a, N_a, heading_a]
 pub const N_INPUTS: usize = 4;              // [vg, phig, va, omega_a]
 pub const N_MEASUREMENTS: usize = 5;        // [bearing_g, range, bearing_a, xa, ya]
 
@@ -50,6 +50,11 @@ pub fn r_true() -> MeasCov {
     r[(4,4)] = 36.0;
 
     return r;
+}
+
+pub fn omega() -> StateCov {
+    let omga: StateCov = StateCov::identity();
+    return omga * DT;
 }
 
 // Helper to wrap angles to interval [-pi, pi]
