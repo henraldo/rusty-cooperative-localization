@@ -7,7 +7,7 @@ use crate::constants::*;
 use crate::filters::Estimator;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("Rust project ready! Dynamics + measurement models loaded.");
+    println!("Beginning UAV-UGV Cooperative Localization Simulation...");
     let x0 = constants::SystemState::from_row_slice(&[10.0, 0.0, constants::PI/2.0, -60.0, 0.0, -constants::PI/2.0]);
     let u0 = constants::ControlInput::from_row_slice(&[2.0, -constants::PI/18.0, 12.0, constants::PI/25.0]);
 
@@ -32,7 +32,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         recorder.record(t, x_truth[i], y_truth[i]);
 
-        // Quick console peek
         if i % 500 == 0 {
             let xhat = filter.get_estimated_state();
             println!("t={:.1}s  x_hat = [{:.2}, {:.2}, {:.2}, {:.2}, {:.2}, {:.2}]",
@@ -44,7 +43,4 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Simulation complete! Check the new simulation_output/ folder.");
     Ok(())
 
-    // println!("Generated {} steps of ground truth", times.len());
-    // println!("Final x_truth: {:?}", x_truth.last().unwrap());
-    // println!("Final y_truth (first 3 elements): {:?}", &y_truth.last().unwrap().as_slice()[0..3]);
 }
