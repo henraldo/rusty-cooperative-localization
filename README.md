@@ -1,6 +1,7 @@
-# UAV-UGV Cooperative Localization with Rust
+# UAV-UGV Cooperative Localization in Rust
 
-This project generates a user-configurable simulation of cooperative localization between a UAV and UGV, using either an Extended Kalman Filter (EKF), or an Unscented Kalman Filter (UKF).
+
+This project generates a user-configurable simulation of cooperative localization between a UAV and UGV, using either an Extended Kalman Filter (EKF), or an Unscented Kalman Filter (UKF). This is an improved version of my similar C++ project that I have implemented in Rust.
 
 Future releases will also provide the means to tune EKF or UKF performance and stability via Monte Carlo
 Truth Model Testing (TMT) - where Monte Carlo trials are run to collect NEES and NIS statistics for assessing dynamic performance of the implemented filter.
@@ -8,6 +9,7 @@ Truth Model Testing (TMT) - where Monte Carlo trials are run to collect NEES and
 Time history data generated from the simulation (along with filter implementation settings) are written to CSV files and placed in a user-defined subdirectory under `/project-root/simulation_output/` for post-processing and analysis.
 
 # Simulation Overview
+
 
 ## State-Space System Definition
 The combined nonlinear state-space system has the form:
@@ -124,7 +126,7 @@ $$\boldsymbol{y}(t) = \begin{bmatrix}
 
 ## Extended Kalman Filter Overview
 The online nonlinear trajectory for the filter is updated at each time step, as part of the prediction
-stage and the nonlinear dynamics model is propagated forward using BOOST's `odeint::runge_kutta_dopri5` ODE solver.
+stage and the nonlinear dynamics model is propagated forward using BOOST's `odeint::runge_kutta4` (4th order) ODE solver.
 A new state estimate
 
  $$\boldsymbol{\hat{x}}^{-}_{k+1} = \boldsymbol{f}(\boldsymbol{\hat{x}}^{+}_k , \boldsymbol{u}_k , \boldsymbol{w}_k = 0)$$
@@ -161,12 +163,16 @@ $$\boldsymbol{\tilde{H}}_{k+1} = \frac{\partial \boldsymbol{h}}{\partial \boldsy
 which is computed to be
 
 $$\boldsymbol{\tilde{H}}_{k+1} = \begin{bmatrix}
-    \frac{x_5 - x_2}{\left( \frac{(x_5 - x_2)^2}{(x_4-x_1)^2} + 1 \right) (x_4 - x_1)^2} & -\frac{1}{(x_4-x_1)\left(\frac{(x_5-x_2)^2}{(x_4-x_1)^2} + 1\right)} & -1 & -\frac{x_5-x_2}{(x_4-x_1)^2\left(\frac{(x_5-x_2)^2}{(x_4-x_1)^2} + 1\right)} & \frac{1}{(x_4-x_1)\left(\frac{(x_5-x_2)^2}{(x_4-x_1)^2} + 1\right)} & 0 \\
-    \frac{x_1 - x_4}{\sqrt{(x_1-x_4)^2 + (x_2-x_5)^2}} & \frac{x_2 - x_5}{\sqrt{(x_1-x_4)^2 + (x_2-x_5)^2}} & 0 & \frac{x_4 - x_1}{\sqrt{(x_1-x_4)^2 + (x_2-x_5)^2}} & \frac{x_5 - x_2}{\sqrt{(x_1-x_4)^2 + (x_2-x_5)^2}} & 0 \\
-    -\frac{x_2-x_5}{(x_1-x_4)^2\left(\frac{(x_2-x_5)^2}{(x_1-x_4)^2} + 1\right)} & \frac{1}{(x_1-x_4)\left(\frac{(x_2-x_5)^2}{(x_1-x_4)^2} + 1\right)} & 0 & \frac{x_2 - x_5}{\left(\frac{(x_2 - x_5)^2}{(x_1-x_4)^2}+1\right) (x_1 - x_4)^2} & -\frac{1}{(x_1-x_4)\left(\frac{(x_2-x_5)^2}{(x_1-x_4)^2} + 1\right)} & -1 \\
+    \frac{dy}{r^2} & -\frac{dx}{r^2} & -1 & -\frac{dy}{r^2} & \frac{dx}{r^2} & 0 \\
+    -\frac{dx}{r} & -\frac{dy}{r} & 0 & \frac{dx}{r} & \frac{dy}{r} & 0 \\
+    \frac{dy}{r^2} & -\frac{dx}{r^2} & 0 & -\frac{dy}{r^2} & \frac{dx}{r^2} & -1 \\
     0 & 0 & 0 & 1 & 0 & 0 \\
     0 & 0 & 0 & 0 & 1 & 0
 \end{bmatrix}_{\hat{x}^{-}_{k+1}}$$
+
+where
+
+$$dx = x_5 - x_2 \quad dy = x_4 - x_1 \quad r^2 = dx^2 + dy^2 \quad and \quad r = \sqrt{dx^2 + dy^2}$$
 
 and the observation estimate for measurement $k+1$ is
 
@@ -236,7 +242,7 @@ $$\boldsymbol{\chi}^i_k = \begin{cases}
 \end{cases}$$
 
 Then each of the sigma points at $t = t_k$ is propagated through the nonlinear dynamics function $\boldsymbol{f}$
-(again using the BOOST `odeint::runge_kutta_dopri5` solver) to generate predicted points
+(again using the BOOST `odeint::runge_kutta4` solver) to generate predicted points
 
 $$\boldsymbol{\chi}^{-i}_{k+1} \quad at \quad t = t_{k+1}$$
 
@@ -275,5 +281,12 @@ $$\boldsymbol{\hat{x}}^+_{k+1} = \boldsymbol{\hat{x}}^-_{k+1} + \boldsymbol{K}_{
 
 $$\boldsymbol{P}^+_{k+1} = \boldsymbol{P}^-_{k+1} - \boldsymbol{K}_{k+1} \boldsymbol{P}_{yy,k+1} \boldsymbol{K}_{k+1}^T$$
 
-# Project Build
-...update this section
+# Building and Running
+```bash
+cargo clean && cargo check
+```
+
+Run simulation:
+```bash
+cargo run
+```
