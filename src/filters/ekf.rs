@@ -13,6 +13,12 @@ pub struct EKF {
 }
 
 impl EKF {
+    /// Instantiates Extended Kalman Filter object
+    ///
+    /// * `x0` - inital states
+    /// * `p0` - initial filter covariance
+    /// * `q_filter` - filter process noise covariance
+    /// * `r_filter` - filter measurement noise covariance
     pub fn new(x0: SystemState, p0: StateCov, q_filter: StateCov, r_filter: MeasCov) -> Self {
         EKF {
             xhat: x0,
