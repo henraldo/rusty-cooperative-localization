@@ -15,7 +15,7 @@ pub struct SimulationData {
 }
 
 pub struct DataRecorder {
-    sim_data: Vec<SimulationData>,
+    pub sim_data: Vec<SimulationData>,
     output_dir: String,
 }
 
@@ -50,10 +50,11 @@ impl DataRecorder {
     /// Writes simulation data to CSV
     /// * `run_name` - prefix for csv file name
     pub fn save(&self, run_name: &str, filter_type: &str) -> Result<(), Box<dyn std::error::Error>> {
-        let dir = Path::new(&self.output_dir);
-        fs::create_dir_all(dir)?;
+        let subdir = format!("{}_{}", filter_type, run_name);
+        let dir = Path::new(&self.output_dir).join(&subdir);
+        fs::create_dir_all(&dir)?;
 
-        let filename: std::path::PathBuf = dir.join(format!("{}_{}_simulation_data.csv", filter_type, run_name));
+        let filename: std::path::PathBuf = dir.join("simulation_data.csv");
         let mut wtr = WriterBuilder::new().has_headers(true).from_path(filename)?;
 
         wtr.write_record(&[

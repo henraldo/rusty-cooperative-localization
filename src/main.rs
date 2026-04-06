@@ -2,6 +2,7 @@ mod constants;
 mod system;
 mod data;
 mod filters;
+mod plotting;
 
 use crate::constants::*;
 use crate::filters::{Estimator, EKF, UKF};
@@ -10,6 +11,7 @@ use std::env;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();
     let filter_type: &str = args.get(1).map(|s| s.as_str()).unwrap_or("ekf");
+    let run_name: &str = "run1";
 
     println!("Beginning UAV-UGV Cooperative Localization Simulation...");
     let x0: SystemState = constants::SystemState::from_row_slice(&[10.0, 0.0, constants::PI/2.0, -60.0, 0.0, -constants::PI/2.0]);
@@ -51,7 +53,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         );
     }
 
-    recorder.save("run", filter_type)?;
+    if let Err(e) = crate::plotting::save_plots(&recorder.sim_data, filter_type, run_name) {
+        eprintln!("Warning: could not save plot: {}", e);
+    }
+
+    recorder.save(run_name, filter_type)?;
     println!("Simulation complete! Check for file in simulation_output/ folder.");
     Ok(())
 
