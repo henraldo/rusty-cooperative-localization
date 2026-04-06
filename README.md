@@ -288,7 +288,12 @@ $$\boldsymbol{P}^+_{k+1} = \boldsymbol{P}^-_{k+1} - \boldsymbol{K}_{k+1} \boldsy
 cargo clean && cargo check
 ```
 
-Run simulation:
+Run EKF simulation:
 ```bash
-cargo run
+cargo run --ekf
+```
+
+Run UKF simulation:
+```bash
+cargo run --ukf
 ```
