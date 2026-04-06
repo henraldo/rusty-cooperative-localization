@@ -12,13 +12,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let filter_type = args.get(1).map(|s| s.as_str()).unwrap_or("ekf");
 
     println!("Beginning UAV-UGV Cooperative Localization Simulation...");
-    let x0 = constants::SystemState::from_row_slice(&[10.0, 0.0, constants::PI/2.0, -60.0, 0.0, -constants::PI/2.0]);
-    let u0 = constants::ControlInput::from_row_slice(&[2.0, -constants::PI/18.0, 12.0, constants::PI/25.0]);
+    let x0: SystemState = constants::SystemState::from_row_slice(&[10.0, 0.0, constants::PI/2.0, -60.0, 0.0, -constants::PI/2.0]);
+    let u0: ControlInput = constants::ControlInput::from_row_slice(&[2.0, -constants::PI/18.0, 12.0, constants::PI/25.0]);
 
-    // Initial covariance (scaled like your main.cpp)
-    let mut p0 = StateCov::zeros();
-    p0[(0,0)] = 0.01; p0[(1,1)] = 0.01; p0[(2,2)] = 0.1;
-    p0[(3,3)] = 0.01; p0[(4,4)] = 0.01; p0[(5,5)] = 0.1;
+    // Initial covariance
+    let mut p0: StateCov = StateCov::zeros();
+    p0[(0,0)] = 0.9; p0[(1,1)] = 0.9; p0[(2,2)] = 0.1;
+    p0[(3,3)] = 1.5; p0[(4,4)] = 1.5; p0[(5,5)] = 0.1;
 
     // UKF settings
     let alpha: f64 = 0.001;
@@ -35,7 +35,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let (times, x_truth, y_truth) = system::SystemModel::generate_ground_truth(500.0, &u0, &x0);
 
     // test record ground truth
-    let mut recorder = data::DataRecorder::new("simulation_output");
+    let mut recorder: data::DataRecorder = data::DataRecorder::new("simulation_output");
 
     for (i, &t) in times.iter().enumerate() {
         if i > 0 {
