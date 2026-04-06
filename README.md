@@ -128,7 +128,7 @@ $$\boldsymbol{y}(t) = \begin{bmatrix}
 
 ## Extended Kalman Filter Overview
 The online nonlinear trajectory for the filter is updated at each time step, as part of the prediction
-stage and the nonlinear dynamics model is propagated forward using BOOST's `odeint::runge_kutta4` (4th order) ODE solver.
+stage and the nonlinear dynamics model is propagated forward using a Runge-Kutta 4th order integration.
 A new state estimate
 
  $$\boldsymbol{\hat{x}}^{-}_{k+1} = \boldsymbol{f}(\boldsymbol{\hat{x}}^{+}_k , \boldsymbol{u}_k , \boldsymbol{w}_k = 0)$$
@@ -244,7 +244,7 @@ $$\boldsymbol{\chi}^i_k = \begin{cases}
 \end{cases}$$
 
 Then each of the sigma points at $t = t_k$ is propagated through the nonlinear dynamics function $\boldsymbol{f}$
-(again using the BOOST `odeint::runge_kutta4` solver) to generate predicted points
+(again using Runge-Kutta 4th order integration) to generate predicted points
 
 $$\boldsymbol{\chi}^{-i}_{k+1} \quad at \quad t = t_{k+1}$$
 
@@ -303,8 +303,11 @@ cargo run -- --filter ekf --run-name run1 --time 600
 
 Running an Extended Kalman Filter simulation with the default parameters and initial covariance diagonal values
 should generate a trajectory plot similar to this:
-
+<img width="1200" height="800" alt="trajectories" src="https://github.com/user-attachments/assets/22892c3a-4e9c-41cd-b664-6e1f5bbecc14" />
 
 
 Running an Unscented Kalman Filter simulation with the default parameters and initial covariance diagonal values
 should generate a trajectory plot with improved estimated state tracking similar to this:
+<img width="1200" height="800" alt="trajectories" src="https://github.com/user-attachments/assets/21f09034-fe8c-47b9-bd3c-b2fc9150e7ef" />
+
+
