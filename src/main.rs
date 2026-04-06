@@ -6,12 +6,20 @@ mod plotting;
 
 use crate::constants::*;
 use crate::filters::{Estimator, EKF, UKF};
-use std::env;
+use clap::Parser;
+
+#[derive(Parser)]
+struct Args {
+    #[arg(short, long, default_value = "ekf")]
+    filter: String,
+    #[arg(short, long, default_value = "run1")]
+    run_name: String,
+    #[arg(short, long, default_value_t = 500.0)]
+    time: f64,
+}
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let args: Vec<String> = env::args().collect();
-    let filter_type: &str = args.get(1).map(|s| s.as_str()).unwrap_or("ekf");
-    let run_name: &str = "run1";
+    let args: Args = Args::parse();
 
     println!("Beginning UAV-UGV Cooperative Localization Simulation...");
     let x0: SystemState = constants::SystemState::from_row_slice(&[10.0, 0.0, constants::PI/2.0, -60.0, 0.0, -constants::PI/2.0]);
@@ -27,13 +35,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let beta: f64 = 2.0;
     let kappa: f64 = 0.0;
 
-    let mut filter: Box<dyn Estimator> = match filter_type {
+    let mut filter: Box<dyn Estimator> = match args.filter.as_str() {
         "ukf" => Box::new(UKF::new(x0, p0, q_true(), r_true(), alpha, beta, kappa)),
         _ => Box::new(EKF::new(x0, p0, q_true(), r_true())),
     };
 
     // Ground truth generation
-    let (times, x_truth, y_truth) = system::SystemModel::generate_ground_truth(500.0, &u0, &x0);
+    let (times, x_truth, y_truth) = system::SystemModel::generate_ground_truth(args.time, &u0, &x0);
 
     // Run Filter Simulation
     let mut recorder: data::DataRecorder = data::DataRecorder::new("simulation_output");
@@ -53,11 +61,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         );
     }
 
-    if let Err(e) = crate::plotting::save_plots(&recorder.sim_data, filter_type, run_name) {
+    if let Err(e) = crate::plotting::save_plots(
+        &recorder.sim_data, args.filter.as_str(), args.run_name.as_str()
+    ) {
         eprintln!("Warning: could not save plot: {}", e);
     }
 
-    recorder.save(run_name, filter_type)?;
+    recorder.save(args.run_name.as_str(), args.filter.as_str())?;
     println!("Simulation complete! Check for file in simulation_output/ folder.");
     Ok(())
 

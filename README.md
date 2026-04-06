@@ -288,12 +288,23 @@ $$\boldsymbol{P}^+_{k+1} = \boldsymbol{P}^-_{k+1} - \boldsymbol{K}_{k+1} \boldsy
 cargo clean && cargo check
 ```
 
-Run EKF simulation:
+The program default runs an EKF simulation for 500 seconds if `cargo run` is executed without any additional args.
+Below are examples of args you may pass in to change basic simulation parameters.
+
+Run EKF simulation for 700 seconds and save output data and plots to `simulation_output/test_run_1/` directory:
 ```bash
-cargo run --ekf
+cargo run -- --filter ekf --run-name test_run_1 --time 700
 ```
 
-Run UKF simulation:
+Run EKF simulation for 600 seconds and save output data and plots to `simulation_output/run1/` directory:
 ```bash
-cargo run --ukf
+cargo run -- --filter ekf --run-name run1 --time 600
 ```
+
+Running an Extended Kalman Filter simulation with the default parameters and initial covariance diagonal values
+should generate a trajectory plot similar to this:
+
+
+
+Running an Unscented Kalman Filter simulation with the default parameters and initial covariance diagonal values
+should generate a trajectory plot with improved estimated state tracking similar to this:
