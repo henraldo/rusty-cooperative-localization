@@ -7,11 +7,11 @@ description = "Rust port of UAV-UGV cooperative localization (EKF vs UKF)"
 license = "MIT"
 
 [dependencies]
-nalgebra = { version = "0.34.1", features = ["serde", "rand"] }  # Linear algebra (replaces Eigen)
-rand = "0.8"                                                  # Gaussian noise
-rand_distr = "0.4"                                            # Normal distributions
-csv = "1.3"                                                   # Output like your C++ sim
-serde = { version = "1.0", features = ["derive"] }            # Config serialization
-chrono = "0.4"                                                # Timestamps for output distributions
-plotters = { version = "0.3.6", features = ["bitmap_backend", "bitmap_encoder"] }
+nalgebra = { version = "0.34.1", features = ["serde", "rand"] }
+rand = "0.8.0"
+rand_distr = "0.4.0"
+csv = "1.3"
+serde = { version = "1.0", features = ["derive"] }
+chrono = "0.4"
+plotly = "0.14"
 clap = { version = "4.5", features = ["derive"] }

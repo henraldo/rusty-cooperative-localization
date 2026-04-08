@@ -22,8 +22,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Args = Args::parse();
 
     println!("Beginning UAV-UGV Cooperative Localization Simulation...");
-    let x0: SystemState = constants::SystemState::from_row_slice(&[10.0, 0.0, constants::PI/2.0, -60.0, 0.0, -constants::PI/2.0]);
-    let u0: ControlInput = constants::ControlInput::from_row_slice(&[2.0, -constants::PI/18.0, 12.0, constants::PI/25.0]);
+
+    // Initial states and control inputs
+    let mut x0: SystemState = SystemState::from_row_slice(&[10.0, 0.0, PI/2.0, -60.0, 0.0, -PI/2.0]);
+    let u0: ControlInput = ControlInput::from_row_slice(&[2.0, -PI/18.0, 12.0, PI/25.0]);
+
+    // Perturbation to initial states
+    let dx0: SystemState = SystemState::from_row_slice(&[-0.01, 0.05, 0.0, -0.5, 0.5, 0.0]);
 
     // Initial covariance
     let mut p0: StateCov = StateCov::zeros();
@@ -41,6 +46,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
 
     // Ground truth generation
+    x0 += dx0;
     let (times, x_truth, y_truth) = system::SystemModel::generate_ground_truth(args.time, &u0, &x0);
 
     // Run Filter Simulation
